@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\LogActivity;
 use Spatie\Permission\Models\Role;
 use DB;
 use Hash;
+use Auth;
 use Illuminate\Support\Arr;
     
 class UserController extends Controller
@@ -55,6 +57,12 @@ class UserController extends Controller
     
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
+
+        $log = LogActivity::create([
+            'user' => Auth::user()->name,
+            'action' => 'Create User Baru',
+            'resource' => 'Tabel User',
+        ]);
     
         return redirect()->route('users.index')
                         ->with('success','User created successfully');
@@ -115,6 +123,12 @@ class UserController extends Controller
         DB::table('model_has_roles')->where('model_id',$id)->delete();
     
         $user->assignRole($request->input('roles'));
+
+        $log = LogActivity::create([
+            'user' => Auth::user()->name,
+            'action' => 'Update User',
+            'resource' => 'Tabel User',
+        ]);
     
         return redirect()->route('users.index')
                         ->with('success','User updated successfully');
@@ -129,6 +143,13 @@ class UserController extends Controller
     public function destroy($id)
     {
         User::find($id)->delete();
+
+        $log = LogActivity::create([
+            'user' => Auth::user()->name,
+            'action' => 'Delete User',
+            'resource' => 'Tabel User',
+        ]);
+
         return redirect()->route('users.index')
                         ->with('success','User deleted successfully');
     }

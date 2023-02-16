@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\LogActivity;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use DB;
+use Auth;
     
 class RoleController extends Controller
 {
@@ -62,6 +64,12 @@ class RoleController extends Controller
     
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($request->input('permission'));
+
+        $log = LogActivity::create([
+            'user' => Auth::user()->name,
+            'action' => 'Create Role',
+            'resource' => 'Tabel Role',
+        ]);
     
         return redirect()->route('roles.index')
                         ->with('success','Role created successfully');
@@ -118,6 +126,12 @@ class RoleController extends Controller
         $role->save();
     
         $role->syncPermissions($request->input('permission'));
+
+        $log = LogActivity::create([
+            'user' => Auth::user()->name,
+            'action' => 'Update Role',
+            'resource' => 'Tabel Role',
+        ]);
     
         return redirect()->route('roles.index')
                         ->with('success','Role updated successfully');
@@ -131,6 +145,12 @@ class RoleController extends Controller
     public function destroy($id)
     {
         DB::table("roles")->where('id',$id)->delete();
+
+        $log = LogActivity::create([
+            'user' => Auth::user()->name,
+            'action' => 'Delete Role',
+            'resource' => 'Tabel Role',
+        ]);
         return redirect()->route('roles.index')
                         ->with('success','Role deleted successfully');
     }
