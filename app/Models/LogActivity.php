@@ -12,8 +12,4 @@ class LogActivity extends Model
     protected $fillable = [
         'user', 'action', 'resource'
     ];
-
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
 }
